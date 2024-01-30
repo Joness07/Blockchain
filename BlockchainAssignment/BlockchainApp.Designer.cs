@@ -37,13 +37,14 @@
             this.publicKeyLabel = new System.Windows.Forms.Label();
             this.privateKeyLabel = new System.Windows.Forms.Label();
             this.validateKeyButton = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.create_transaction_button = new System.Windows.Forms.Button();
             this.amountTextbox = new System.Windows.Forms.TextBox();
             this.feeTextbox = new System.Windows.Forms.TextBox();
             this.recieverKeyTextbox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.generate_new_block_button = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // outputRichTextbox
@@ -58,14 +59,14 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(132, 353);
+            this.textBox1.Location = new System.Drawing.Point(132, 338);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(190, 20);
+            this.textBox1.Size = new System.Drawing.Size(130, 20);
             this.textBox1.TabIndex = 1;
             // 
             // printBlockButton
             // 
-            this.printBlockButton.Location = new System.Drawing.Point(12, 349);
+            this.printBlockButton.Location = new System.Drawing.Point(12, 332);
             this.printBlockButton.Name = "printBlockButton";
             this.printBlockButton.Size = new System.Drawing.Size(114, 26);
             this.printBlockButton.TabIndex = 2;
@@ -126,15 +127,15 @@
             this.validateKeyButton.UseVisualStyleBackColor = true;
             this.validateKeyButton.Click += new System.EventHandler(this.button3_Click);
             // 
-            // button1
+            // create_transaction_button
             // 
-            this.button1.Location = new System.Drawing.Point(13, 402);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(96, 55);
-            this.button1.TabIndex = 9;
-            this.button1.Text = "Create Transaction";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            this.create_transaction_button.Location = new System.Drawing.Point(12, 423);
+            this.create_transaction_button.Name = "create_transaction_button";
+            this.create_transaction_button.Size = new System.Drawing.Size(95, 45);
+            this.create_transaction_button.TabIndex = 9;
+            this.create_transaction_button.Text = "Create Transaction";
+            this.create_transaction_button.UseVisualStyleBackColor = true;
+            this.create_transaction_button.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // amountTextbox
             // 
@@ -185,19 +186,30 @@
             this.label3.TabIndex = 15;
             this.label3.Text = "Reciever Key";
             // 
+            // generate_new_block_button
+            // 
+            this.generate_new_block_button.Location = new System.Drawing.Point(13, 365);
+            this.generate_new_block_button.Name = "generate_new_block_button";
+            this.generate_new_block_button.Size = new System.Drawing.Size(94, 52);
+            this.generate_new_block_button.TabIndex = 16;
+            this.generate_new_block_button.Text = "Generate New Block";
+            this.generate_new_block_button.UseVisualStyleBackColor = true;
+            this.generate_new_block_button.Click += new System.EventHandler(this.button2_Click_1);
+            // 
             // BlockchainApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
             this.ClientSize = new System.Drawing.Size(683, 469);
+            this.Controls.Add(this.generate_new_block_button);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.recieverKeyTextbox);
             this.Controls.Add(this.feeTextbox);
             this.Controls.Add(this.amountTextbox);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.create_transaction_button);
             this.Controls.Add(this.validateKeyButton);
             this.Controls.Add(this.privateKeyLabel);
             this.Controls.Add(this.publicKeyLabel);
@@ -227,13 +239,14 @@
         private System.Windows.Forms.Label publicKeyLabel;
         private System.Windows.Forms.Label privateKeyLabel;
         private System.Windows.Forms.Button validateKeyButton;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button create_transaction_button;
         private System.Windows.Forms.TextBox amountTextbox;
         private System.Windows.Forms.TextBox feeTextbox;
         private System.Windows.Forms.TextBox recieverKeyTextbox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button generate_new_block_button;
     }
 }
 

@@ -11,7 +11,8 @@ namespace BlockchainAssignment
     {
         DateTime timeStamp;
         String senderAdress, recipientAdress, hash, signature;
-        Double amount, fee;
+        Double amount;
+        public Double fee;
 
         public Transaction(String senderAdress, String recipientAdress, Double amount, Double fee, String privateKey)
         {
