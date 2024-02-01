@@ -201,7 +201,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.ClientSize = new System.Drawing.Size(683, 469);
+            this.ClientSize = new System.Drawing.Size(677, 475);
             this.Controls.Add(this.generate_new_block_button);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);

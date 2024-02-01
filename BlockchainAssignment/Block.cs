@@ -43,19 +43,25 @@ namespace BlockchainAssignment
             this.hash = Mine();
         }
 
-        public Block(Block lastBlock, List<Transaction> transactions)
+        public Block(Block lastBlock, List<Transaction> transactions, String address = "")
         {
             this.timeStamp = DateTime.Now;
             this.index = lastBlock.index + 1;
             this.prevHash = lastBlock.hash;
-            this.hash = Mine();
 
+            minerAdress = address;
+
+            transactions.Add(CreateRewardTransaction(transactions));
             transactionList = transactions;
+            
+            this.hash = Mine();
         }
 
         public Transaction CreateRewardTransaction(List<Transaction> transactions)
         {
+            //sum fees in the list of transactions in the mined block
             fees = transactions.Aggregate(0.0, (acc, t)=>acc + t.fee);
+            //return reward transaction between transfered as "mined rewards" to the miner
             return new Transaction("Mine Rewards", minerAdress, (reward + fees), 0, "");
         }
 
@@ -63,7 +69,7 @@ namespace BlockchainAssignment
         {
             String hash = String.Empty;
             SHA256 hasher = SHA256Managed.Create();
-            String input = index.ToString() + timeStamp.ToString() + prevHash + nonce.ToString();
+            String input = index.ToString() + timeStamp.ToString() + prevHash + nonce.ToString() + reward.ToString();
 
             Byte[] hashByte = hasher.ComputeHash(Encoding.UTF8.GetBytes(input));
             foreach (byte x in hashByte)
@@ -97,6 +103,9 @@ namespace BlockchainAssignment
                 "\nHash: " + hash.ToString() +
                 "\nNonce: " + nonce.ToString() +
                 "\nDifficulty: " + difficulty.ToString() +
+                "\nReward: " + reward.ToString() +
+                "\nFees: " + fees.ToString() +
+                "\nMiner's Address: " + minerAdress.ToString() +
                 "\nTransactions:\n" + output + "\n";
         }
     }

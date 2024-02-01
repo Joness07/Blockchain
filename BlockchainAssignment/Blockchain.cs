@@ -11,17 +11,39 @@ namespace BlockchainAssignment
         public List<Block> Blocks = new List<Block>();
 
         public List<Transaction> transactionPool = new List<Transaction>();
-        int transactionPerBlock = 5;
+        int transactionsPerBlock = 5;
 
         public Blockchain()
         {
-            Blocks.Add(new Block());
+            Blocks = new List<Block>() {
+                new Block()
+            };
             transactionPool = new List<Transaction>();
         }
 
-        public String GetBlockAsString(int index)
+        public String getBlock(int index)
         {
-            return Blocks[index].ToString();
+            if (index >= 0 && index < Blocks.Count)
+                return Blocks[index].ToString();
+            return "Block does not Exist";
+        }
+
+        public Block getLastBlock()
+        {
+            return Blocks[Blocks.Count - 1];
+        }
+
+        public List<Transaction> GetPendingTransactions()
+        {
+            int n = Math.Min(transactionsPerBlock, transactionPool.Count);
+            List<Transaction> transactions = transactionPool.GetRange(0, n);
+            transactionPool.RemoveRange(0, n);
+            return transactions;
+        }
+
+        public override string ToString()
+        {
+            return String.Join("\n", Blocks);
         }
     }
 }

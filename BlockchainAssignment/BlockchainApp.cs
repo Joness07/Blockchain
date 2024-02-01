@@ -31,7 +31,7 @@ namespace BlockchainAssignment
             int index = 0;
             if(Int32.TryParse(textBox1.Text, out index))
             {
-                outputRichTextbox.Text = blockChain.GetBlockAsString(index);
+                outputRichTextbox.Text = blockChain.getBlock(index);
             }
         }
 
@@ -68,13 +68,17 @@ namespace BlockchainAssignment
         private void button1_Click_1(object sender, EventArgs e)
         {
             Transaction newTransaction = new Transaction(publicKeyTextbox.Text, privateKeyTextbox.Text, Double.Parse(amountTextbox.Text), Double.Parse(feeTextbox.Text), privateKeyTextbox.Text);
-            blockChain.transactionPool.Add(transaction);
+            blockChain.transactionPool.Add(newTransaction);
             outputRichTextbox.Text = newTransaction.ToString();
         }
 
         private void button2_Click_1(object sender, EventArgs e)
         {
+            List<Transaction> transactions = blockChain.GetPendingTransactions();
+            Block newBlock = new Block(blockChain.getLastBlock(), transactions, publicKeyTextbox.Text);
+            blockChain.Blocks.Add(newBlock);
 
+            outputRichTextbox.Text = blockChain.ToString();
         }
     }
 }
