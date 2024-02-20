@@ -43,7 +43,21 @@ namespace BlockchainAssignment
 
         public override string ToString()
         {
-            return String.Join("\n", Blocks);
+            String output = String.Empty;
+            Blocks.ForEach(b => output += (b.ToString() + "\n"));
+            return output;
+        }
+        public double GetBalance(string address) {
+            double balance = 0.0;
+            foreach(Block b in Blocks)
+            {
+                foreach (Transaction t in b.transactionList)
+                {
+                    //17:44
+                }
+            }
+
+            return balance;
         }
     }
 }

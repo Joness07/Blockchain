@@ -80,5 +80,30 @@ namespace BlockchainAssignment
 
             outputRichTextbox.Text = blockChain.ToString();
         }
+
+        private void button1_Click_2(object sender, EventArgs e)
+        {
+            bool valid = false;
+            if(blockChain.Blocks.Count == 1)
+            {
+                valid = true;
+            }
+            for(int i =1; i<blockChain.Blocks.Count -1; i++)
+            {
+                if(blockChain.Blocks[i].prevHash != blockChain.Blocks[i - 1].hash)
+                {
+                    valid = false;
+                    return;
+                }
+            }
+            if (valid)
+            {
+                outputRichTextbox.Text = "Blockchain is valid";
+            }
+            else
+            {
+                outputRichTextbox.Text = "Blockchain is invalid";
+            }
+        }
     }
 }

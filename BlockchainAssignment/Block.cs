@@ -9,12 +9,12 @@ namespace BlockchainAssignment
 {
     class Block
     {
-        int index;
         DateTime timeStamp;
-        String hash;
-        String prevHash;
+        public int index;
+        public String hash;
+        public String prevHash;
 
-        List<Transaction> transactionList = new List<Transaction>();
+        public List<Transaction> transactionList = new List<Transaction>();
 
         //proof of work
         public long nonce = 0;
