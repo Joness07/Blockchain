@@ -9,22 +9,24 @@ namespace BlockchainAssignment
 {
     class Block
     {
-        DateTime timeStamp;
+        private DateTime timeStamp;
         public int index;
+        public int difficulty = 4;
+        
         public String hash;
         public String prevHash;
+        public String merkleRoot;
+        public String minerAdress = String.Empty;
 
         public List<Transaction> transactionList = new List<Transaction>();
 
         //proof of work
         public long nonce = 0;
-        public int difficulty = 4;
-
+         
         //rewards and fees
         public double reward = 1.0;
         public double fees = 0.0;
 
-        public String minerAdress = String.Empty;
 
         public Block(int index, String prevHash)
         {
@@ -90,7 +92,40 @@ namespace BlockchainAssignment
                 hash = CreateHash();
             }
             return hash;
-        } 
+        }
+
+        public static String MerkleRoot(List<Transaction> transactionList)
+        {
+            List<String> hashes = transactionList.Select(t => t.hash).ToList(); // Get a list of transaction hashes for "combining"
+
+            // Handle Blocks with...
+            if (hashes.Count == 0) // No transactions
+            {
+                return String.Empty;
+            }
+            if (hashes.Count == 1) // One transaction - hash with "self"
+            {
+                return HashCode.HashTools.CombineHash(hashes[0], hashes[0]);
+            }
+            while (hashes.Count != 1) // Multiple transactions - Repeat until tree has been traversed
+            {
+                List<String> merkleLeaves = new List<String>(); // Keep track of current "level" of the tree
+
+                for (int i = 0; i < hashes.Count; i += 2) // Step over neighbouring pair combining each
+                {
+                    if (i == hashes.Count - 1)
+                    {
+                        merkleLeaves.Add(HashCode.HashTools.CombineHash(hashes[i], hashes[i])); // Handle an odd number of leaves
+                    }
+                    else
+                    {
+                        merkleLeaves.Add(HashCode.HashTools.CombineHash(hashes[i], hashes[i + 1])); // Hash neighbours leaves
+                    }
+                }
+                hashes = merkleLeaves; // Update the working "layer"
+            }
+            return hashes[0]; // Return the root node
+        }
 
         public override string ToString()
         {

@@ -10,8 +10,12 @@ namespace BlockchainAssignment
     class Transaction
     {
         DateTime timeStamp;
-        String senderAdress, recipientAdress, hash, signature;
-        Double amount;
+        public String senderAdress;
+        public String recipientAdress; 
+        public String hash;
+            
+        String signature;
+        public Double amount;
         public Double fee;
 
         public Transaction(String senderAdress, String recipientAdress, Double amount, Double fee, String privateKey)

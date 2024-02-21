@@ -59,5 +59,25 @@ namespace BlockchainAssignment
 
             return balance;
         }
+        public double GetBalance(String address)
+        {
+            double balance = 0.0;
+            foreach(Block b in Blocks)
+            {
+                foreach(Transaction t in b.transactionList)
+                {
+                    if (t.recipientAdress.Equals(address))
+                    {
+                        balance += t.amount;
+                    }
+                    if (t.senderAdress.Equals(address))
+                    {
+                        balance -= (t.amount + t.fee);
+                    }
+                }
+            }
+
+            return balance;
+        }
     }
 }
