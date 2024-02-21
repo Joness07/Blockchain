@@ -11,22 +11,21 @@ namespace BlockchainAssignment
     {
         private DateTime timeStamp;
         public int index;
-        public int difficulty = 4;
+        public int difficulty = 2;
         
         public String hash;
         public String prevHash;
         public String merkleRoot;
-        public String minerAdress = String.Empty;
+        public String minerAddress = String.Empty;
 
         public List<Transaction> transactionList = new List<Transaction>();
 
         //proof of work
-        public long nonce = 0;
-         
+        public long nonce;
+
         //rewards and fees
         public double reward = 1.0;
         public double fees = 0.0;
-
 
         public Block(int index, String prevHash)
         {
@@ -38,25 +37,26 @@ namespace BlockchainAssignment
         /*Genesis Block*/
         public Block()
         {
-            this.timeStamp = DateTime.Now;
-            this.index = 0;
-            this.prevHash = String.Empty;
-            reward = 0;
-            this.hash = Mine();
+            timeStamp = DateTime.Now;
+            index = 0;
+            transactionList = new List<Transaction>();
+            hash = Mine();
         }
 
-        public Block(Block lastBlock, List<Transaction> transactions, String address = "")
+        public Block(Block lastBlock, List<Transaction> transactions, String minerAddress)
         {
-            this.timeStamp = DateTime.Now;
-            this.index = lastBlock.index + 1;
-            this.prevHash = lastBlock.hash;
+            timeStamp = DateTime.Now;
+            index = lastBlock.index + 1;
+            prevHash = lastBlock.hash;
 
-            minerAdress = address;
+            this.minerAddress = minerAddress;
 
             transactions.Add(CreateRewardTransaction(transactions));
             transactionList = transactions;
-            
-            this.hash = Mine();
+
+            merkleRoot = MerkleRoot(transactionList);
+
+            hash = Mine();
         }
 
         public Transaction CreateRewardTransaction(List<Transaction> transactions)
@@ -64,14 +64,14 @@ namespace BlockchainAssignment
             //sum fees in the list of transactions in the mined block
             fees = transactions.Aggregate(0.0, (acc, t)=>acc + t.fee);
             //return reward transaction between transfered as "mined rewards" to the miner
-            return new Transaction("Mine Rewards", minerAdress, (reward + fees), 0, "");
+            return new Transaction("Mine Rewards", minerAddress, (reward + fees), 0, "");
         }
 
         public String CreateHash()
         {
             String hash = String.Empty;
             SHA256 hasher = SHA256Managed.Create();
-            String input = index.ToString() + timeStamp.ToString() + prevHash + nonce.ToString() + reward.ToString();
+            String input = index.ToString() + timeStamp.ToString() + prevHash + nonce.ToString() + reward.ToString() + merkleRoot;
 
             Byte[] hashByte = hasher.ComputeHash(Encoding.UTF8.GetBytes(input));
             foreach (byte x in hashByte)
@@ -90,6 +90,7 @@ namespace BlockchainAssignment
             {
                 nonce++; //increment nonce
                 hash = CreateHash();
+                Console.WriteLine(nonce +":" + hash);
             }
             return hash;
         }
@@ -132,16 +133,21 @@ namespace BlockchainAssignment
             String output = String.Empty;
             transactionList.ForEach(t => output += (t.ToString() + "\n"));
 
-            return "Index: " + index.ToString() +
-                "\nTimestamp: " + timeStamp.ToString() +
-                "\nPrevious Hash: " + prevHash +
-                "\nHash: " + hash.ToString() +
-                "\nNonce: " + nonce.ToString() +
-                "\nDifficulty: " + difficulty.ToString() +
-                "\nReward: " + reward.ToString() +
-                "\nFees: " + fees.ToString() +
-                "\nMiner's Address: " + minerAdress.ToString() +
-                "\nTransactions:\n" + output + "\n";
+            return "[BLOCK START]"
+                + "\nIndex: " + index
+                + "\tTimestamp: " + timeStamp
+                + "\nPrevious Hash: " + prevHash
+                + "\n-- PoW --"
+                + "\nDifficulty Level: " + difficulty
+                + "\nNonce: " + nonce
+                + "\nHash: " + hash
+                + "\n-- Rewards --"
+                + "\nReward: " + reward
+                + "\nMiners Address: " + minerAddress
+                + "\n-- " + transactionList.Count + " Transactions --"
+                + "\nMerkle Root: " + merkleRoot
+                + "\n" + String.Join("\n", transactionList)
+                + "\n[BLOCK END]";
         }
     }
 }

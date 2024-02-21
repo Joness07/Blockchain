@@ -81,19 +81,28 @@ namespace BlockchainAssignment
             outputRichTextbox.Text = blockChain.ToString();
         }
 
-        private void validateChain_Click(object sender, EventArgs e)
+        private void validateChainButton_Click(object sender, EventArgs e)
         {
             bool valid = true;
-            if(blockChain.Blocks.Count == 1)
+            if (blockChain.Blocks.Count == 1)
             {
-                valid = true;
+                if (!blockChain.ValidateMerkleRoot(blockChain.Blocks[0]))
+                {
+                    outputRichTextbox.Text = "Blockchain is invalid";
+                }
+                else
+                {
+                    outputRichTextbox.Text = "Blockchain is valid";
+                }
                 return;
             }
-            for(int i=1; i<blockChain.Blocks.Count -1; i++)
+
+
+            for (int i = 1; i < blockChain.Blocks.Count - 1; i++)
             {
-                if(blockChain.Blocks[i].prevHash != blockChain.Blocks[i - 1].hash)
+                if (blockChain.Blocks[i].prevHash != blockChain.Blocks[i - 1].hash || !blockChain.ValidateMerkleRoot(blockChain.Blocks[i]))
                 {
-                    valid = false;
+                    outputRichTextbox.Text = "Blockchain is invalid";
                     return;
                 }
             }
@@ -107,7 +116,7 @@ namespace BlockchainAssignment
             }
         }
 
-        private void checkBalance_Click(object sender, EventArgs e)
+        private void checkBalanceButton_Click(object sender, EventArgs e)
         {
             outputRichTextbox.Text = blockChain.GetBalance(publicKeyTextbox.Text).ToString() + " Assignment Coin";
         }

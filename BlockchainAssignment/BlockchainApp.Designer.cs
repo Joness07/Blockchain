@@ -45,8 +45,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.generate_new_block_button = new System.Windows.Forms.Button();
-            this.validateChain = new System.Windows.Forms.Button();
-            this.checkBalance = new System.Windows.Forms.Button();
+            this.validateChainButton = new System.Windows.Forms.Button();
+            this.checkBalanceButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // outputRichTextbox
@@ -121,9 +121,9 @@
             // 
             // validateKeyButton
             // 
-            this.validateKeyButton.Location = new System.Drawing.Point(596, 403);
+            this.validateKeyButton.Location = new System.Drawing.Point(587, 403);
             this.validateKeyButton.Name = "validateKeyButton";
-            this.validateKeyButton.Size = new System.Drawing.Size(75, 23);
+            this.validateKeyButton.Size = new System.Drawing.Size(84, 23);
             this.validateKeyButton.TabIndex = 8;
             this.validateKeyButton.Text = "Validate Key";
             this.validateKeyButton.UseVisualStyleBackColor = true;
@@ -198,12 +198,34 @@
             this.generate_new_block_button.UseVisualStyleBackColor = true;
             this.generate_new_block_button.Click += new System.EventHandler(this.button2_Click_1);
             // 
+            // validateChainButton
+            // 
+            this.validateChainButton.Location = new System.Drawing.Point(587, 433);
+            this.validateChainButton.Name = "validateChainButton";
+            this.validateChainButton.Size = new System.Drawing.Size(84, 23);
+            this.validateChainButton.TabIndex = 17;
+            this.validateChainButton.Text = "Validate Chain";
+            this.validateChainButton.UseVisualStyleBackColor = true;
+            this.validateChainButton.Click += new System.EventHandler(this.validateChainButton_Click);
+            // 
+            // checkBalanceButton
+            // 
+            this.checkBalanceButton.Location = new System.Drawing.Point(490, 403);
+            this.checkBalanceButton.Name = "checkBalanceButton";
+            this.checkBalanceButton.Size = new System.Drawing.Size(91, 23);
+            this.checkBalanceButton.TabIndex = 18;
+            this.checkBalanceButton.Text = "Check Balance";
+            this.checkBalanceButton.UseVisualStyleBackColor = true;
+            this.checkBalanceButton.Click += new System.EventHandler(this.checkBalanceButton_Click);
+            // 
             // BlockchainApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
             this.ClientSize = new System.Drawing.Size(677, 475);
+            this.Controls.Add(this.checkBalanceButton);
+            this.Controls.Add(this.validateChainButton);
             this.Controls.Add(this.generate_new_block_button);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -249,6 +271,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button generate_new_block_button;
+        private System.Windows.Forms.Button validateChainButton;
+        private System.Windows.Forms.Button checkBalanceButton;
     }
 }
 

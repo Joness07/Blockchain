@@ -10,22 +10,23 @@ namespace BlockchainAssignment
     {
         public List<Block> Blocks = new List<Block>();
 
-        public List<Transaction> transactionPool = new List<Transaction>();
         int transactionsPerBlock = 5;
+
+        public List<Transaction> transactionPool = new List<Transaction>();
 
         public Blockchain()
         {
             Blocks = new List<Block>() {
                 new Block()
             };
-            transactionPool = new List<Transaction>();
         }
 
         public String getBlock(int index)
         {
             if (index >= 0 && index < Blocks.Count)
                 return Blocks[index].ToString();
-            return "Block does not Exist";
+            else
+                return "Block does not Exist";
         }
 
         public Block getLastBlock()
@@ -38,6 +39,7 @@ namespace BlockchainAssignment
             int n = Math.Min(transactionsPerBlock, transactionPool.Count);
             List<Transaction> transactions = transactionPool.GetRange(0, n);
             transactionPool.RemoveRange(0, n);
+            transactionPool.RemoveRange(0, n);
             return transactions;
         }
 
@@ -47,17 +49,10 @@ namespace BlockchainAssignment
             Blocks.ForEach(b => output += (b.ToString() + "\n"));
             return output;
         }
-        public double GetBalance(string address) {
-            double balance = 0.0;
-            foreach(Block b in Blocks)
-            {
-                foreach (Transaction t in b.transactionList)
-                {
-                    //17:44
-                }
-            }
-
-            return balance;
+        public bool ValidateMerkleRoot(Block b)
+        {
+            String reMerkle = Block.MerkleRoot(b.transactionList);
+            return reMerkle.Equals(b.merkleRoot);
         }
         public double GetBalance(String address)
         {
