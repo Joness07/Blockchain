@@ -4,11 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Diagnostics;
 
 namespace BlockchainAssignment
 {
     class Block
     {
+        private int numThreads = 4;
+
         private DateTime timeStamp;
         public int index;
         public int difficulty = 2;
@@ -40,7 +44,7 @@ namespace BlockchainAssignment
             timeStamp = DateTime.Now;
             index = 0;
             transactionList = new List<Transaction>();
-            hash = Mine();
+            hash = Mine(numThreads);
         }
 
         public Block(Block lastBlock, List<Transaction> transactions, String minerAddress)
@@ -56,7 +60,7 @@ namespace BlockchainAssignment
 
             merkleRoot = MerkleRoot(transactionList);
 
-            hash = Mine();
+            hash = Mine(numThreads);
         }
 
         public Transaction CreateRewardTransaction(List<Transaction> transactions)
@@ -80,7 +84,7 @@ namespace BlockchainAssignment
             }
             return hash;
         }
-        public String Mine()
+        public String MineSingleThread()
         {
             String hash = CreateHash();
 
@@ -88,12 +92,54 @@ namespace BlockchainAssignment
             String re = new string('0', difficulty);
             while (!hash.StartsWith(re)) //rehash if hashing requirement not met
             {
+  
                 nonce++; //increment nonce
                 hash = CreateHash();
-                Console.WriteLine(nonce +":" + hash);
             }
             return hash;
         }
+
+        public String Mine(int numThreads)
+        {
+
+            Stopwatch totalStopwatch = new Stopwatch(); //create new stopwatch for total.
+            totalStopwatch.Start(); //start stopwatch
+
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(); //crteate cancellation
+
+            List<Task<string>> tasks = new List<Task<string>>();
+
+            for (int i=0; i < numThreads; i++) //create tasks equal to numThreads
+            {
+                Task<string> task = Task.Run(() =>
+                {
+                    Stopwatch stopwatch = new Stopwatch(); //create and start individual stopwatch 
+                    stopwatch.Start();
+                    string hash = MineSingleThread(); //mine function
+                    stopwatch.Stop(); //stop individual stopwatch
+                    Console.Write($"\nThread {Task.CurrentId}: Hash completed in {stopwatch.ElapsedMilliseconds} milliseconds");
+                    return hash;
+                }, cancellationTokenSource.Token);
+
+                tasks.Add(task); //adds task back to list.
+            }
+
+            // Wait for any task to complete
+            Task<string> firstCompletedTask = Task.WhenAny(tasks).Result;  
+
+            // Cancel remaining tasks
+            cancellationTokenSource.Cancel();
+
+            // Get the valid hash found by the first completed task
+            string validHash = firstCompletedTask.Result;
+
+            totalStopwatch.Stop();
+            Console.WriteLine($"\nTotal time taken for mining with {numThreads} threads: {totalStopwatch.ElapsedMilliseconds} milliseconds");
+
+            Console.WriteLine("\nValid Hash: " + validHash);
+            return validHash;
+        }
+
 
         public static String MerkleRoot(List<Transaction> transactionList)
         {
