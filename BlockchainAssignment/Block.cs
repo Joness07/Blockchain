@@ -16,6 +16,7 @@ namespace BlockchainAssignment
         private DateTime timeStamp;
         public int index;
         public int difficulty = 2;
+        public int targetBlockTime = 10;
         
         public String hash;
         public String prevHash;
@@ -41,7 +42,7 @@ namespace BlockchainAssignment
         /*Genesis Block*/
         public Block()
         {
-            timeStamp = DateTime.Now;
+            timeStamp = DateTime.Now; 
             index = 0;
             transactionList = new List<Transaction>();
             hash = Mine(numThreads);
@@ -61,6 +62,26 @@ namespace BlockchainAssignment
             merkleRoot = MerkleRoot(transactionList);
 
             hash = Mine(numThreads);
+        }
+
+        public int AdjustDifficulty(DateTime lastMinedBlock, int currentDifficulty, int targetBlockTime)
+        {
+            TimeSpan elapsedTime = DateTime.Now - lastMinedBlock;
+            if(elapsedTime.TotalSeconds > targetBlockTime) //difficulty too low
+            {
+                return currentDifficulty + 1;
+            }
+            else
+            {
+                if(currentDifficulty > 1) //difficulty 
+                {
+                    return currentDifficulty - 1;
+                }
+                else
+                {
+                    return currentDifficulty;
+                }
+            }
         }
 
         public Transaction CreateRewardTransaction(List<Transaction> transactions)
@@ -101,6 +122,7 @@ namespace BlockchainAssignment
 
         public String Mine(int numThreads)
         {
+            Console.WriteLine("Mining...");
 
             Stopwatch totalStopwatch = new Stopwatch(); //create new stopwatch for total.
             totalStopwatch.Start(); //start stopwatch

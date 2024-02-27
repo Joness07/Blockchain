@@ -39,7 +39,6 @@ namespace BlockchainAssignment
             int n = Math.Min(transactionsPerBlock, transactionPool.Count);
             List<Transaction> transactions = transactionPool.GetRange(0, n);
             transactionPool.RemoveRange(0, n);
-            transactionPool.RemoveRange(0, n);
             return transactions;
         }
 
