@@ -10,6 +10,8 @@ namespace BlockchainAssignment
     {
         public List<Block> Blocks = new List<Block>();
 
+        public static int GlobalDifficulty = 5;
+
         int transactionsPerBlock = 5;
 
         public List<Transaction> transactionPool = new List<Transaction>();
@@ -34,8 +36,42 @@ namespace BlockchainAssignment
             return Blocks[Blocks.Count - 1];
         }
 
-        public List<Transaction> GetPendingTransactions()
+        private void Shuffle<T>(List<T> list)
         {
+            Random rng = new Random();
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+        }
+
+        public List<Transaction> GetPendingTransactions(string miningPrefrence)
+        {
+            switch (miningPrefrence)
+            {
+                case "Greedy":
+                    transactionPool.OrderByDescending(t => t.fee).ToList();
+                    Console.WriteLine("Greedy Sorting Applied");
+                    break;
+                case "Altruistic":
+                    transactionPool.OrderBy(t => t.timeStamp).ToList();
+                    Console.WriteLine("Alruistic Sorting Applied");
+                    break;
+                case "Random":
+                    Console.WriteLine("Random Sorting Applied");
+                    Shuffle(transactionPool);
+                    break;
+                default:
+                    break;
+            }
+
+            Console.WriteLine("Mining Preference " + miningPrefrence);
+
             int n = Math.Min(transactionsPerBlock, transactionPool.Count);
             List<Transaction> transactions = transactionPool.GetRange(0, n);
             transactionPool.RemoveRange(0, n);

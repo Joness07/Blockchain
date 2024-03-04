@@ -9,7 +9,7 @@ namespace BlockchainAssignment
 {
     class Transaction
     {
-        DateTime timeStamp;
+        public DateTime timeStamp;
         public String senderAdress;
         public String recipientAdress; 
         public String hash;

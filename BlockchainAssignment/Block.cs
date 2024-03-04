@@ -11,12 +11,13 @@ namespace BlockchainAssignment
 {
     class Block
     {
-        private int numThreads = 4;
+        int difficulty;
+        bool validHash = false;
+        private int numThreads = 8;
 
-        private DateTime timeStamp;
+        private DateTime timeStamp, lastTimeStamp;
         public int index;
-        public int difficulty = 2;
-        public int targetBlockTime = 10;
+        public int targetBlockTime = 10000;
         
         public String hash;
         public String prevHash;
@@ -26,11 +27,13 @@ namespace BlockchainAssignment
         public List<Transaction> transactionList = new List<Transaction>();
 
         //proof of work
-        public long nonce;
+        public int nonce;
 
         //rewards and fees
         public double reward = 1.0;
         public double fees = 0.0;
+
+        bool dynamicDifficulty;
 
         public Block(int index, String prevHash)
         {
@@ -48,11 +51,16 @@ namespace BlockchainAssignment
             hash = Mine(numThreads);
         }
 
-        public Block(Block lastBlock, List<Transaction> transactions, String minerAddress)
+        public Block(Block lastBlock, List<Transaction> transactions, String minerAddress, bool dynamicDifficultySet)
         {
+
+            dynamicDifficulty = dynamicDifficultySet;
+
             timeStamp = DateTime.Now;
             index = lastBlock.index + 1;
             prevHash = lastBlock.hash;
+
+            lastTimeStamp = lastBlock.timeStamp;
 
             this.minerAddress = minerAddress;
 
@@ -64,21 +72,38 @@ namespace BlockchainAssignment
             hash = Mine(numThreads);
         }
 
-        public int AdjustDifficulty(DateTime lastMinedBlock, int currentDifficulty, int targetBlockTime)
+        public static int GetGlobalDifficulty()
         {
+            return Blockchain.GlobalDifficulty;
+        }
+
+        public static void SetGlobalDifficulty(int difficulty)
+        {
+            Blockchain.GlobalDifficulty = difficulty;
+        }
+
+        public int AdjustDifficulty(DateTime lastMinedBlock, int targetBlockTime)
+        {
+            int currentDifficulty = GetGlobalDifficulty();
+            Console.WriteLine("Current Difficulty = " + currentDifficulty);
             TimeSpan elapsedTime = DateTime.Now - lastMinedBlock;
-            if(elapsedTime.TotalSeconds > targetBlockTime) //difficulty too low
+            if (elapsedTime.TotalSeconds < targetBlockTime) //difficulty too low
             {
+                Console.WriteLine("Difficulty Increased +1");
+                SetGlobalDifficulty(GetGlobalDifficulty() + 1);
                 return currentDifficulty + 1;
             }
             else
             {
-                if(currentDifficulty > 1) //difficulty 
+                if (currentDifficulty > 1) //difficulty 
                 {
+                    Console.WriteLine("Difficulty Decreased -1");
+                    SetGlobalDifficulty(GetGlobalDifficulty() - 1);
                     return currentDifficulty - 1;
                 }
                 else
                 {
+                    Console.WriteLine("Difficulty Same");
                     return currentDifficulty;
                 }
             }
@@ -92,11 +117,17 @@ namespace BlockchainAssignment
             return new Transaction("Mine Rewards", minerAddress, (reward + fees), 0, "");
         }
 
-        public String CreateHash()
+        public String CreateHash(int localNonce = -1)
         {
+            int lNonce = nonce;
+            if (localNonce != -1)
+            {
+                lNonce = localNonce;
+            }
+
             String hash = String.Empty;
             SHA256 hasher = SHA256Managed.Create();
-            String input = index.ToString() + timeStamp.ToString() + prevHash + nonce.ToString() + reward.ToString() + merkleRoot;
+            String input = index.ToString() + timeStamp.ToString() + prevHash + lNonce.ToString() + reward.ToString() + merkleRoot;
 
             Byte[] hashByte = hasher.ComputeHash(Encoding.UTF8.GetBytes(input));
             foreach (byte x in hashByte)
@@ -105,24 +136,47 @@ namespace BlockchainAssignment
             }
             return hash;
         }
-        public String MineSingleThread()
+        public void MineSingleThread(int nonce, int numThreads, int? threadID)
         {
-            String hash = CreateHash();
 
-            //hash must start with 0's equal to the difficulty.0
-            String re = new string('0', difficulty);
-            while (!hash.StartsWith(re)) //rehash if hashing requirement not met
+            if (dynamicDifficulty) //if dynamic difficulty is on then adjust
             {
-  
-                nonce++; //increment nonce
-                hash = CreateHash();
+                difficulty = AdjustDifficulty(lastTimeStamp, targetBlockTime);
             }
-            return hash;
+            else
+            {
+                difficulty = GetGlobalDifficulty();
+            }
+
+            String hash;
+            //hash must start with 0's equal to the difficulty.
+            String re = new string('0', difficulty);
+            while (!validHash) //rehash if hashing requirement not met
+            {
+                hash = CreateHash(nonce);
+                if (hash.StartsWith(re))
+                {
+                    //hash found, set global variables
+                    validHash = true;
+                    this.hash = hash;
+                    this.nonce = nonce;
+                }
+                else
+                {
+                    //hash not found, increment nonce
+                    nonce += numThreads;
+                    //Console.Write("\nThread ID: " + threadID + " nonce: " + nonce);
+                }
+            }
         }
 
         public String Mine(int numThreads)
         {
             Console.WriteLine("Mining...");
+
+
+            //int adjustedDifficulty = AdjustDifficulty(lastBlockMined, currentDifficulty, targetBlockTime);
+            //Console.WriteLine($"Adjusted Difficulty Level: {adjustedDifficulty}");
 
             Stopwatch totalStopwatch = new Stopwatch(); //create new stopwatch for total.
             totalStopwatch.Start(); //start stopwatch
@@ -131,23 +185,23 @@ namespace BlockchainAssignment
 
             List<Task<string>> tasks = new List<Task<string>>();
 
-            for (int i=0; i < numThreads; i++) //create tasks equal to numThreads
+            for (int i = 0; i < numThreads; i++) //create tasks equal to numThreads
             {
                 Task<string> task = Task.Run(() =>
                 {
                     Stopwatch stopwatch = new Stopwatch(); //create and start individual stopwatch 
                     stopwatch.Start();
-                    string hash = MineSingleThread(); //mine function
+                    MineSingleThread(i, numThreads, Task.CurrentId); //mine function
                     stopwatch.Stop(); //stop individual stopwatch
-                    Console.Write($"\nThread {Task.CurrentId}: Hash completed in {stopwatch.ElapsedMilliseconds} milliseconds");
+                    Console.Write($"\nThread {Task.CurrentId}: Hash completed in {stopwatch.ElapsedMilliseconds} milliseconds, Nonce = " + nonce);
                     return hash;
                 }, cancellationTokenSource.Token);
 
-                tasks.Add(task); //adds task back to list.
+                tasks.Add(task); //adds task to list.
             }
 
             // Wait for any task to complete
-            Task<string> firstCompletedTask = Task.WhenAny(tasks).Result;  
+            Task<string> firstCompletedTask = Task.WhenAny(tasks).Result;
 
             // Cancel remaining tasks
             cancellationTokenSource.Cancel();

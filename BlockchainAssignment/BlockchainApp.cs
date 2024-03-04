@@ -21,17 +21,17 @@ namespace BlockchainAssignment
             outputRichTextbox.Text = "New Blockchain Initialised!";
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void printBlockButton_Click(object sender, EventArgs e) 
         {
             int index = 0;
-            if(Int32.TryParse(textBox1.Text, out index))
+            if(Int32.TryParse(textBox1.Text, out index)) 
             {
                 outputRichTextbox.Text = blockChain.getBlock(index);
             }
         }
 
 
-        private void button2_Click(object sender, EventArgs e)
+        private void generateKeyButton_Click(object sender, EventArgs e)
         {
             String privKey;
             Wallet.Wallet myNewWallet = new Wallet.Wallet(out privKey);
@@ -39,7 +39,7 @@ namespace BlockchainAssignment
             privateKeyTextbox.Text = privKey;
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void validateKeyButton_Click(object sender, EventArgs e)
         {
             if (Wallet.Wallet.ValidatePrivateKey(privateKeyTextbox.Text, publicKeyTextbox.Text))
             {
@@ -51,17 +51,19 @@ namespace BlockchainAssignment
             }
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
+        private void createTransactionButton_Click(object sender, EventArgs e)
         {
             Transaction newTransaction = new Transaction(publicKeyTextbox.Text, privateKeyTextbox.Text, Double.Parse(amountTextbox.Text), Double.Parse(feeTextbox.Text), privateKeyTextbox.Text);
             blockChain.transactionPool.Add(newTransaction);
             outputRichTextbox.Text = newTransaction.ToString();
         }
 
-        private void button2_Click_1(object sender, EventArgs e)
+        private void generateNewBlockButton_Click(object sender, EventArgs e)
         {
-            List<Transaction> transactions = blockChain.GetPendingTransactions();
-            Block newBlock = new Block(blockChain.getLastBlock(), transactions, publicKeyTextbox.Text);
+            string miningPreference= MiningPrefrence.Text;
+
+            List<Transaction> transactions = blockChain.GetPendingTransactions(miningPreference);
+            Block newBlock = new Block(blockChain.getLastBlock(), transactions, publicKeyTextbox.Text, DynamicDifficulty.Checked);
             blockChain.Blocks.Add(newBlock);
 
             outputRichTextbox.Text = blockChain.ToString();
@@ -105,6 +107,11 @@ namespace BlockchainAssignment
         private void checkBalanceButton_Click(object sender, EventArgs e)
         {
             outputRichTextbox.Text = blockChain.GetBalance(publicKeyTextbox.Text).ToString() + " Assignment Coin";
+        }
+
+        private void MiningPrefrence_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
         }
     }
 }
